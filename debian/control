@@ -1,0 +1,13 @@
+Source: vx-dga-l-control-de-inactividad
+Section: utils
+Priority: extra
+Maintainer: Arturo Martín <amartinromero@gmail.com>
+Build-Depends: debhelper (>= 9.0.0)
+Standards-Version: 3.9.3
+Homepage: http://wiki.vitalinux.educa.aragon.es
+
+Package: vx-dga-l-control-de-inactividad
+Architecture: all
+Depends: ${misc:Depends}, xprintidle
+Description: Control del tiempo de inactividad del equipo
+ Control del tiempo de inactividad del equipo desencadenando una acción programada

@@ -1,0 +1,2 @@
+# Permiso para apagar el equipo
+ALL ALL=(ALL) NOPASSWD: /sbin/start-stop-daemon --start --oknodo --quiet -b --exec /usr/share/vitalinux/bin/vx-dga-l-control-de-inactividad.sh

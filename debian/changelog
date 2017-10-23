@@ -1,0 +1,6 @@
+vx-dga-l-control-de-inactividad (1.0-1) unstable; urgency=low
+
+  * A demanda del IES Luis Buñuel se crea el paquete para decidir que hacer tras un tiempo de inactividad
+  * Se agrega a el IES Luis Buñuel con tiempo de inactividad de 30 minutos con acción apagar
+
+ -- Arturo Martin Romero <amartinromero@gmail.com>  Tue, 17 Oct 2017 01:00:00 +0200
