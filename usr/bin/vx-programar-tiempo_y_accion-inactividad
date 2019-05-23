@@ -48,7 +48,7 @@ if test "${USER}" = "root" ; then
 					"Cerrar Sesión (cerrando aplicaciones)" ) OPCION=1 ;;
 					"Cerrar Sesión (sin cerrar aplicaciones)" ) OPCION=2 ;;
 				esac
-				sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${OPCION}/g" "${FICHCONF}"	
+				sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${OPCION}/g" "${FICHCONF}"
 			;;
 		"1" ) exit 0 ;;
 		"2" ) sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=0/g" "${FICHCONF}" ;;

@@ -53,6 +53,28 @@ case "$1" in
 			echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
 		fi
 
+		CENTRO="SEC-MARIAMOLINER"
+		if echo "${ETIQUETAS}" | grep "${CENTRO}" &> /dev/null ; then
+			# 30 minutos: 1800 segundos y acción 1:Cerrar Sesión (en milisegundos)
+			TIEMPO=1800000
+			ACCION=1
+			sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=${TIEMPO}/g" "${FICHCONF}"
+			sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${ACCION}/g" "${FICHCONF}"
+			echo "=> Tu equipo esta etiquetado como \"${CENTRO}\":"
+			echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
+		fi
+
+		CENTRO="PRI-BASILIOPARAISO"
+		if echo "${ETIQUETAS}" | grep "${CENTRO}" &> /dev/null ; then
+			# 30 minutos: 1800 segundos y acción 1:Cerrar Sesión (en milisegundos)
+			TIEMPO=1800000
+			ACCION=1
+			sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=${TIEMPO}/g" "${FICHCONF}"
+			sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${ACCION}/g" "${FICHCONF}"
+			echo "=> Tu equipo esta etiquetado como \"${CENTRO}\":"
+			echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
+		fi
+
 		if /sbin/start-stop-daemon \
 			--start --oknodo --quiet -b \
 			--exec /usr/share/vitalinux/bin/vx-lanzar-control-de-inactividad.sh ; then

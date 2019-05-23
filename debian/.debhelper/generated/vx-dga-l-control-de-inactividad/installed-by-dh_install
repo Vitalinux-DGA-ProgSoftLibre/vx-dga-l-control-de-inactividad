@@ -1,0 +1,5 @@
+./etc/default
+./etc/sudoers.d
+./etc/xdg
+./usr/bin
+./usr/share

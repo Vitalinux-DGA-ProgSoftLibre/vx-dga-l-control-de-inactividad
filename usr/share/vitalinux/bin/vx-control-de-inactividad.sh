@@ -9,7 +9,7 @@ function aviso-accion-inactividad {
 	          --title "Cuenta Atrás para el Apagado del Equipo" \
 	          --text " ${TEXTO} \n Dispones de 20sg ... <b>PARA ABORTAR, CLICK EN CANCELAR!</b> " \
 	          --percentage=0 \
-	          --auto-close
+	          --auto-close || sudo /sbin/init 0
 	if test $? -ne 0 ; then
 	  zenity --info --text="¡¡Acción Abortada por el usuario!!"
 	  # exit 0
