@@ -6,6 +6,11 @@ Paquete creado con la finalidad de poder programar una acción tras un periodo d
 2) Cerrar Sesión cerrando todas las aplicaciones al usuario activo
 3) Cerrar Sesión manteniendo todas las aplicaciones del usuario abiertas
 
+Se proporcionan dos lanzadores disponibles en el menú de Utilidades/Utilities:
+
+1) **Deshabilitar Control de Inactividad**: Deshabilita para la sesión actual el control de inactividad.
+2) **Programar Inactividad del Sistema**: Permite configurar el tiempo máximo de inactividad y la acción que se desencadenará una vez transcurrido ese tiempo.
+
 # Usuarios Destinatarios
 
 Profesores, alumnos, y demás usuarios que adviertan que se quedan sus equipos arrancados con periodos de inactividad excesivamente largos

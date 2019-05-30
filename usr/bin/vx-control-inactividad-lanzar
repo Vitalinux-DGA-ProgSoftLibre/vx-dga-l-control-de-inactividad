@@ -1,0 +1,12 @@
+#!/bin/bash
+
+USUARIO="$(vx-usuario-grafico)"
+[[ "${USUARIO}" != "lightdm" ]] && \
+( export DISPLAY=:0 && \
+    su "${USUARIO}" \
+    -c 'sudo /sbin/start-stop-daemon --start --oknodo --quiet -b --name vx-inactividad -m --pidfile /run/vx-control-inactividad.pid -a /usr/bin/vx-inactividad' \
+    --login && \
+echo "=> Se ha iniciado el servicio de control de inactividad ...") || \
+echo "=> No hay sesión gráfica en el equipo ... se iniciará el servicio en la siguiente sesión"
+
+exit 0

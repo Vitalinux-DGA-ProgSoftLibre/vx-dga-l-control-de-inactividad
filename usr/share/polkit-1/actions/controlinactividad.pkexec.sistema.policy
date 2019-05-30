@@ -4,16 +4,29 @@
  "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 <policyconfig>
 
-<action id="sistema.pkexec.controlinactividad">
-    <message>Se requieren privilegios para poder ejecutar el programa</message>
-    <message xml:lang="es">Se requieren privilegios para poder ejecutar el programa</message>
-    <icon_name>synaptic</icon_name>
+<action id="sistema.pkexec.controlinactividadprogramar">
+    <message>Privileges are required to be able to execute the program</message>
+    <message xml:lang="es">Se requieren Privilegios para poder configurar el Control de Inactividad</message>
+    <icon_name>tiempo-inactividad</icon_name>
     <defaults>
       <allow_any>auth_admin</allow_any>
       <allow_inactive>auth_admin</allow_inactive>
       <allow_active>auth_admin</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/vx-programar-tiempo_y_accion-inactividad</annotate>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/vx-control-inactividad-programar</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+
+<action id="sistema.pkexec.controlinactividaddeshabilitar">
+    <message>Privileges are required to be able to execute the program</message>
+    <message xml:lang="es">Se requieren privilegios para poder configurar el control de inactividad</message>
+    <icon_name>tiempo-inactividad</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/vx-control-inactividad-deshabilitar</annotate>
     <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
   </action>
 

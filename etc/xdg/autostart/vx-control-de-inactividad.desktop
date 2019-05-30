@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=sudo /sbin/start-stop-daemon --start --oknodo --quiet -b --exec /usr/share/vitalinux/bin/vx-control-de-inactividad.sh
+Exec=sudo /sbin/start-stop-daemon --start --oknodo --quiet -b --name vx-inactividad -m --pidfile /run/vx-control-inactividad.pid -a /usr/bin/vx-inactividad
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true

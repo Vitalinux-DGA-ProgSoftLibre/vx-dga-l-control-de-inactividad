@@ -1,0 +1,16 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Idle Time Control
+Name[en]=Unable Idle Time Control
+Name[es]=Deshabilitar Control de Inactividad
+Comment=This app allow you unable control idle time
+Comment[en]=This app allow you unable control idle time
+Comment[es]=Aplicación que permite Deshabilitar el Control de Inactividad del equipo
+Icon=tiempo-inactividad
+Exec=vx-pk-control-inactividad-deshabilitar
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupNotify=true
+Hidden=false
+

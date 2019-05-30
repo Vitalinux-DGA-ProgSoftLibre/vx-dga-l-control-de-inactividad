@@ -1,0 +1,39 @@
+#!/bin/bash
+## Programador hora y acción ante un periodo de inactividad
+## Arturo Martín Romero
+
+USER=$(whoami)
+FICHCONF="/etc/default/vx-dga-variables/vx-dga-l-control-de-inactividad.conf"
+. "${FICHCONF}"
+
+function mensaje()
+{
+    yad --center --title "Inhabilitar Control de la Inactividad del Equipo" \
+    --width="500" \
+    --fixed \
+    --window-icon tiempo-inactividad \
+    --image tiempo-inactividad \
+    --text-align center \
+    --text="${1}" \
+    --button="Cerrar:0" \
+    --buttons-layout center
+}
+
+if test "${USER}" = "root" ; then
+    
+    ## Matamos el proceso:
+    FICH="/run/vx-control-inactividad.pid"
+    # /sbin/start-stop-daemon --status --pidfile "${FICH}" && \
+    # /sbin/start-stop-daemon --oknodo --stop --pidfile "${FICH}" --retry=TERM/10/KILL/5 && \
+    vx-control-inactividad-deshabilitar-cli && \
+    ( TEXTO="Se ha deshabilitado para esta sesión el Control de Inactividad" && mensaje "${TEXTO}" ) || \
+    ( TEXTO="No se ha podido deshabilitar Control de Inactividad" && mensaje "${TEXTO}" )
+    
+else
+    yad --title "Deshabilitar el Control de la Inactividad del Equipo" \
+    --window-icon vitalinux \
+    --image tiempo-inactividad \
+    --info --text " No tienes permiso para ejecutar el programa " \
+    --window-icon="shutdown" \
+    --width="400" --height="100" --fixed --center --justify="center" --text-align="center"
+fi

@@ -1,3 +1,12 @@
+vx-dga-l-control-de-inactividad (1.0-3) unstable; urgency=low
+
+  * Adecuación del arranque del servicio con start-stop-daemon
+  * Evitar que haya más de un servicio de control de inactividad iniciado
+  * Posibilidad de inhabilitar el servicio mediante un lanzador
+  * Solucionado la opción de apagado cuando la sesión esta cerrada tras el tiempo de inactividad
+
+ -- Arturo Martin Romero <amartinromero@gmail.com>  Tue, 28 May 2019 01:00:00 +0200
+
 vx-dga-l-control-de-inactividad (1.0-2) unstable; urgency=low
 
   * IES María Moliner: tiempo de inactividad 30 minutos, acción Cerrar Sesión

@@ -22,70 +22,83 @@ set -e
 . /etc/default/vx-dga-variables/vx-dga-variables-general.conf
 
 case "$1" in
-	configure)
-	
-	# Matamos cualquier proceso previo relativo al control de inactividad que pudiera existir:
-	if pgrep -f "/bin/bash /usr/share/vitalinux/bin/vx-control-de-inactividad.sh" &> /dev/null ; then
-		echo "=> Se matarán los procesos de control precedentes ..."
-		#pgrep -f "/bin/bash /usr/share/vitalinux/bin/vx-control-de-inactividad.sh" | xargs kill -9
-		pkill -f "/bin/bash /usr/share/vitalinux/bin/vx-control-de-inactividad.sh"
-	fi
-
-	for FICH in "/usr/bin/vx-programar-tiempo_y_accion-inactividad" \
-		"/usr/share/vitalinux/bin/vx-control-de-inactividad.sh" \
-		"/usr/share/vitalinux/bin/vx-lanzar-control-de-inactividad.sh" ; do
-		echo "=> Damos permiso de ejecución a: \"${FICH}\""
-		chmod +x "${FICH}"
-	done
-
-	FICHCONF="/etc/default/vx-dga-variables/vx-dga-l-control-de-inactividad.conf"
-	if test -f "${FICHCONF}" ; then
-		ETIQUETAS=$(migasfree-tags -g)
-		# Asignación de acción por inactividad según las etiquetas migasfree:
-		CENTRO="SEC-LUISBUNUEL"
-		if echo "${ETIQUETAS}" | grep "${CENTRO}" &> /dev/null ; then
-			# 30 minutos: 1800 segundos y acción 0:Apagar (en milisegundos)
-			TIEMPO=1800000
-			ACCION=0
-			sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=${TIEMPO}/g" "${FICHCONF}"
-			sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${ACCION}/g" "${FICHCONF}"
-			echo "=> Tu equipo esta etiquetado como \"${CENTRO}\":"
-			echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
-		fi
-
-		CENTRO="SEC-MARIAMOLINER"
-		if echo "${ETIQUETAS}" | grep "${CENTRO}" &> /dev/null ; then
-			# 30 minutos: 1800 segundos y acción 1:Cerrar Sesión (en milisegundos)
-			TIEMPO=1800000
-			ACCION=1
-			sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=${TIEMPO}/g" "${FICHCONF}"
-			sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${ACCION}/g" "${FICHCONF}"
-			echo "=> Tu equipo esta etiquetado como \"${CENTRO}\":"
-			echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
-		fi
-
-		CENTRO="PRI-BASILIOPARAISO"
-		if echo "${ETIQUETAS}" | grep "${CENTRO}" &> /dev/null ; then
-			# 30 minutos: 1800 segundos y acción 1:Cerrar Sesión (en milisegundos)
-			TIEMPO=1800000
-			ACCION=1
-			sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=${TIEMPO}/g" "${FICHCONF}"
-			sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${ACCION}/g" "${FICHCONF}"
-			echo "=> Tu equipo esta etiquetado como \"${CENTRO}\":"
-			echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
-		fi
-
-		if /sbin/start-stop-daemon \
-			--start --oknodo --quiet -b \
-			--exec /usr/share/vitalinux/bin/vx-lanzar-control-de-inactividad.sh ; then
-			echo "=> Se ha iniciado el proceso de control de inactividad ..."
-		fi
-	fi
-	;;
-
+    configure)
+        
+        # Matamos cualquier proceso previo relativo al control de inactividad que pudiera existir:
+        if pgrep -f "/bin/bash /usr/share/vitalinux/bin/vx-control-de-inactividad.sh" &> /dev/null ; then
+            echo "=> Se matarán los procesos de control precedentes ..."
+            #pgrep -f "/bin/bash /usr/share/vitalinux/bin/vx-control-de-inactividad.sh" | xargs kill -9
+            pkill -f "/bin/bash /usr/share/vitalinux/bin/vx-control-de-inactividad.sh"
+        fi
+        
+        for FICH in "/usr/bin/vx-control-inactividad-programar" \
+        "/usr/bin/vx-pk-control-inactividad-programar" \
+        "/usr/bin/vx-control-inactividad-deshabilitar" \
+        "/usr/bin/vx-pk-control-inactividad-deshabilitar" \
+        "/usr/bin/vx-control-inactividad" \
+        "/usr/bin/vx-control-inactividad-lanzar" ; do
+            echo "=> Damos permiso de ejecución a: \"${FICH}\""
+            chmod +x "${FICH}"
+        done
+        
+        # Creamos un enlace simbolico que usaremos como "name" en el start-stop-daemon:
+        ENLACE="/usr/bin/vx-inactividad"
+        EJECUTABLE="/usr/bin/vx-control-inactividad"
+        [ -L "${ENLACE}" ] && rm -f "${ENLACE}"
+        [ -f "${EJECUTABLE}" ] && ln -s "${EJECUTABLE}" "${ENLACE}"
+        
+        FICHCONF="/etc/default/vx-dga-variables/vx-dga-l-control-de-inactividad.conf"
+        if test -f "${FICHCONF}" ; then
+            ETIQUETAS=$(migasfree-tags -g)
+            # Asignación de acción por inactividad según las etiquetas migasfree:
+            CENTRO="SEC-LUISBUNUEL"
+            if echo "${ETIQUETAS}" | grep "${CENTRO}" &> /dev/null ; then
+                # 30 minutos: 1800 segundos y acción 0:Apagar (en milisegundos)
+                TIEMPO=1800000
+                ACCION=0
+                sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=${TIEMPO}/g" "${FICHCONF}"
+                sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${ACCION}/g" "${FICHCONF}"
+                echo "=> Tu equipo esta etiquetado como \"${CENTRO}\":"
+                echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
+            fi
+            
+            CENTRO="SEC-MARIAMOLINER"
+            if echo "${ETIQUETAS}" | grep "${CENTRO}" &> /dev/null ; then
+                # 30 minutos: 1800 segundos y acción 1:Cerrar Sesión (en milisegundos)
+                TIEMPO=1800000
+                ACCION=1
+                sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=${TIEMPO}/g" "${FICHCONF}"
+                sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${ACCION}/g" "${FICHCONF}"
+                echo "=> Tu equipo esta etiquetado como \"${CENTRO}\":"
+                echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
+            fi
+            
+            CENTRO="PRI-BASILIOPARAISO"
+            if echo "${ETIQUETAS}" | grep "${CENTRO}" &> /dev/null ; then
+                # 30 minutos: 1800 segundos y acción 1:Cerrar Sesión (en milisegundos)
+                TIEMPO=1800000
+                ACCION=1
+                sed -i "s/^TIEMPO_INACTIVIDAD=.*/TIEMPO_INACTIVIDAD=${TIEMPO}/g" "${FICHCONF}"
+                sed -i "s/^ACCION_TRAS_INACTIVIDAD=.*/ACCION_TRAS_INACTIVIDAD=${ACCION}/g" "${FICHCONF}"
+                echo "=> Tu equipo esta etiquetado como \"${CENTRO}\":"
+                echo "==> Se asignará un TIEMPO=${TIEMPO} y como ACCION=${ACCION}"
+            fi
+            
+            LANZADOR="/usr/bin/vx-control-inactividad-lanzar"
+            [ -f "${LANZADOR}" ] && \
+            "${LANZADOR}"
+            
+            # if /sbin/start-stop-daemon \
+            # --start --oknodo --quiet -b \
+            # --exec /usr/share/vitalinux/bin/vx-lanzar-control-de-inactividad.sh ; then
+            #     echo "=> Se ha iniciado el proceso de control de inactividad ..."
+            # fi
+        fi
+    ;;
+    
     abort-upgrade|abort-remove|abort-deconfigure)
     ;;
-
+    
     *)
         echo "postinst called with unknown argument \`$1'" >&2
         exit 1

@@ -1,0 +1,16 @@
+#!/bin/bash
+## Programador hora y acción ante un periodo de inactividad
+## Arturo Martín Romero
+
+USER=$(whoami)
+
+if test "${USER}" = "root" ; then
+    ## Matamos el proceso que controla la inactividad del equipo:
+    /sbin/start-stop-daemon --status --name vx-inactividad && \
+    /sbin/start-stop-daemon --oknodo --stop --name vx-inactividad --retry=TERM/10/KILL/5 && \
+    exit 0 || exit 1
+    # /sbin/start-stop-daemon --status --pidfile "${FICH}" && \
+    # /sbin/start-stop-daemon --oknodo --stop --pidfile "${FICH}" --retry=TERM/10/KILL/5 && \
+else
+    echo "Necesitas ser root para deshabilitar el control de inactividad ..."
+fi

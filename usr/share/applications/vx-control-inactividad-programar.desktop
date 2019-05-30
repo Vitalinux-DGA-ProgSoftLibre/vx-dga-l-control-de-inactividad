@@ -1,13 +1,13 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Idle Time Control
-Name[en]=Idle Time Control
-Name[es]=Control del Tiempo de Inactividad
+Name[en]=Manage system inactivity
+Name[es]=Programar Inactividad del Sistema
 Comment=This app allow you launch an action in function the idle time
 Comment[en]=This app allow you launch an action in function the idle time
-Comment[es]=Aplicación que permite desencadenar una acción ante la Inactividad del equipo
+Comment[es]=Aplicación que permite programar una acción ante la Inactividad del equipo
 Icon=tiempo-inactividad
-Exec=pkexec --user root /usr/bin/vx-programar-tiempo_y_accion-inactividad
+Exec=vx-pk-control-inactividad-programar
 Terminal=false
 Type=Application
 Categories=Utility;

@@ -1,0 +1,106 @@
+#!/bin/bash
+
+function aviso-accion-inactividad {
+    if [ "${USUARIO}" != "lightdm" ] ; then
+        for i in {1..100}; do
+            echo "$i"
+            sleep 0.2
+        done | zenity --progress \
+        --window-icon tiempo-inactividad \
+        --title "Acción ante la Inactividad del Equipo" \
+        --text " ${TEXTO} \n Dispones de 20sg ... <b>PARA ABORTAR, CLICK EN CANCELAR!</b> " \
+        --percentage=0 \
+        --auto-close
+        if test $? -ne 0 ; then
+            DECISION=1
+            zenity --info --text="¡¡Acción Abortada por el usuario!!"
+            # exit 0
+        fi
+    fi
+}
+
+function accion-por-inactividad {
+    DECISION=0
+    case ${1} in
+        "0" ) 	TEXTO="${TEXTO}\n=> <b>Apagar el Equipo</b>\n"
+            aviso-accion-inactividad
+            if test "${DECISION}" -eq 0 ; then
+                sudo /sbin/init 0
+            fi
+        ;;
+        "1" ) 	TEXTO="${TEXTO}\n=> <b>Cerrar Sesión (cerrando aplicaciones)</b>\n"
+            aviso-accion-inactividad
+            if test "${DECISION}" -eq 0 ; then
+                lxsession # kill -u "${USUARIO}"
+            fi
+        ;;
+        "2" ) 	TEXTO="${TEXTO}\n=> <b>Cerrar Sesión (sin cerrar aplicaciones)</b>\n"
+            aviso-accion-inactividad
+            if test "${DECISION}" -eq 0 ; then
+                dm-tool lock # dm-tool switch-to-greeter
+            fi
+        ;;
+    esac
+}
+
+function convseg()
+{
+    echo "scale=0;${1}/1000" | bc
+}
+
+function comprobar-accion-inactividad {
+    if test "${TIEMPO_INACTIVIDAD}" -gt 0 ; then
+        if test "${TIEMPO}" -ge "${TIEMPO_INACTIVIDAD}" ; then
+            echo ":=> $(date): Transcurrido el Tiempo de Inactividad ${TIEMPO_INACTIVIDAD} se llevará acabo la acción ${ACCION_TRAS_INACTIVIDAD} ..." >> "${FICHLOG}"
+            accion-por-inactividad "${ACCION_TRAS_INACTIVIDAD}"
+        else
+            echo "=> Hay programada una acción ante la Inactividad del usuario ${USUARIO}, pero aún no ha llegado a su limite:" >> "${FICHLOG}"
+            echo ":=> Tiempo de Inactividad del usuario ${USUARIO}: $(convseg ${TIEMPO}) sg." >> "${FICHLOG}"
+            TIEMPO_RESTANTE="$(( TIEMPO_INACTIVIDAD - TIEMPO ))"
+            echo ":=> Tiempo programado de Inactividad antes de desencadenar la acción: $(convseg "${TIEMPO_INACTIVIDAD}") sg. Faltan: $(convseg "${TIEMPO_RESTANTE}")" >> "${FICHLOG}"
+            echo ":=> Acción tras la Inactividad: ${ACCION_TRAS_INACTIVIDAD}" >> "${FICHLOG}"
+            echo ":::-- Log de Control de Inactividad --:::" >> "${FICHLOG}"
+        fi
+    else
+        echo "=> $(date): No hay programada ninguna acción ante la inactividad del equipo ... esperaremos ${PERIODO}sg para volver a comprobarlo." > "${FICHLOG}"
+    fi
+}
+
+FICHLOG="/var/log/vitalinux/vx-accion-por-inactividad.log"
+mv "${FICHLOG}" "/var/log/vitalinux/vx-accion-por-inactividad.ant.log"
+echo "$(date) - Control de Inactivdad:" > "${FICHLOG}"
+
+# FICHCONF contiene dos variables:
+# 1) TIEMPO_INACTIVIDAD: Tiempo máximo de inactividad
+# 2) ACCION_TRAS_INACTIVIDAD: Acción que se desencadena al transcurrir el tiempo anterior
+FICHCONF="/etc/default/vx-dga-variables/vx-dga-l-control-de-inactividad.conf"
+. "${FICHCONF}"
+PERIODO=60
+# SESIONCERRADA es una variable que informará de si la sesión se ha cerrado, y el usuario es lightdm:
+SESIONCERRADA=0
+TIEMPO=0
+USUARIO="$(vx-usuario-grafico)"
+TEXTO="Ante la inactividad del usuario se procederá a aplicar la siguiente acción:"
+comprobar-accion-inactividad
+
+while test 1 -eq 1 ; do
+    USUARIO="$(vx-usuario-grafico)"
+    . "${FICHCONF}"
+    
+    if [ "${USUARIO}" != "lightdm" ] ; then
+        SESIONCERRADA=0
+        TIEMPO="$(export DISPLAY=:0 && su "${USUARIO}" -c 'xprintidle' --login)"
+        comprobar-accion-inactividad
+    else
+        # Si se ha cerrado sesión y se ha optado por apagar el equipo ante la inactividad lo apagaremos transcurrido ese tiempo:
+        if test "${ACCION_TRAS_INACTIVIDAD}" -eq 0 ; then
+            # date +%s: segundos transcurridos desde 1970-01-01
+            # Como TIEMPO DE INACTIVIDAD esta en milisgs multiplicaremos por 1000
+            (( SESIONCERRADA == 0 )) && EPOCHCIERRESESION="$(date +%s)" && SESIONCERRADA=1
+            EPOCHACTUAL="$(date +%s)"
+            TIEMPO=$(( (EPOCHACTUAL - EPOCHCIERRESESION) * 1000 ))
+            comprobar-accion-inactividad
+        fi
+    fi
+    sleep ${PERIODO}
+done
